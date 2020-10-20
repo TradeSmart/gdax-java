@@ -2,9 +2,6 @@ plugins {
     id 'java'
 }
 
-group 'com.coinbase.exchange'
-version '0.11.0'
-
 repositories {
     mavenCentral()
 }
