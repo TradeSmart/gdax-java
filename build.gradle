@@ -2,21 +2,8 @@ plugins {
     id 'maven-publish'
 }
 
-
 wrapper {
     distributionType = Wrapper.DistributionType.ALL
-}
-
-publishing {
-  repositories {
-      maven {
-          url 'https://tuned-artifacts-703155998277.d.codeartifact.us-east-1.amazonaws.com/maven/forked-third-party-libraries/'
-          credentials {
-              username "aws"
-              password System.env.CODEARTIFACT_AUTH_TOKEN
-          }
-      }
-  }
 }
 
 allprojects {
@@ -25,11 +12,16 @@ allprojects {
     group = 'com.coinbase.exchange'
     description = 'Client for the Coinbase Pro API'
     version = '0.11.0-SNAPSHOT+TUNED'
-
     repositories {
+        maven {
+            url 'https://tuned-artifacts-703155998277.d.codeartifact.us-east-1.amazonaws.com/maven/forked-third-party-libraries/'
+            credentials {
+                username "aws"
+                password System.env.CODEARTIFACT_AUTH_TOKEN
+            }
+        }
         mavenCentral()
     }
-
     test {
         exclude '**/*IntegrationTest*'
     }
@@ -41,7 +33,27 @@ allprojects {
         include '**/*IntegrationTest*'
     }
 }
-subprojects { }
+subprojects {
+    publishing {
+        publications {
+            "$project.name"(MavenPublication) {
+                groupId 'com.coinbase.exchange'
+                artifactId project.name
+                version '0.11.0-SNAPSHOT+TUNED'
+                from components.java
+            }
+        }
+        repositories {
+            maven {
+                url 'https://tuned-artifacts-703155998277.d.codeartifact.us-east-1.amazonaws.com/maven/forked-third-party-libraries/'
+                credentials {
+                    username "aws"
+                    password System.env.CODEARTIFACT_AUTH_TOKEN
+                }
+            }
+        }
+    }
+ }
 
 // apply dependency constraints to all java modules
 configure(subprojects.findAll { true }) {
